@@ -126,9 +126,9 @@ struct OptionTemplate {
     ParsedOption parsed;
 };
 
-#define OPTDELIM "%4$n"
-#define INTFMT "%3$d" OPTDELIM
-#define FLOATFMT "%2$f" OPTDELIM
+#define OPTDELIM "%3$n"
+#define INTFMT "%2$d" OPTDELIM
+#define FLOATFMT "%1$f" OPTDELIM
 #define STRINGFMT(s) "-" s "=" OPTDELIM
 #define ENDOPT {0}
 

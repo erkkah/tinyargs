@@ -87,15 +87,21 @@ TestMap tests = { { "Bool option",
                         assert(!parseArgs(&missing2.argc, &missing2.argv, options));
                         assert(missing2.argc == 0);
                     } },
-                  { "Option list", []() {
-                       OPTDEFS(options, FLOATOPT("ratio", "-78.5"), INTOPT("count", "123"), BOOLOPT("help"),
-                               STRINGOPT("name", "noname"));
-                       const char* usage = listOptions(options);
-                       assert(usage != nullptr);
-                       std::string usageString(usage);
-                       for (const auto word : { "ratio", "-78.5", "count", "123", "help", "name", "noname" }) {
-                           assert(usageString.find(word) != usageString.npos);
-                       }
+                  { "Option list",
+                    []() {
+                        OPTDEFS(options, FLOATOPT("ratio", "-78.5"), INTOPT("count", "123"), BOOLOPT("help"),
+                                STRINGOPT("name", "noname"));
+                        const char* usage = listOptions(options);
+                        assert(usage != nullptr);
+                        std::string usageString(usage);
+                        for (const auto word : { "ratio", "-78.5", "count", "123", "help", "name", "noname" }) {
+                            assert(usageString.find(word) != usageString.npos);
+                        }
+                    } },
+                  { "Bools with values are invalid", []() {
+                       OPTDEFS(options, BOOLOPT("flag"));
+                       Commandline cmdline{ "-flag=false" };
+                       assert(!parseArgs(&cmdline.argc, &cmdline.argv, options));
                    } } };
 
 int main() {

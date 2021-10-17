@@ -7,15 +7,15 @@
 
 static bool parseOptionTemplate(OptionTemplate* t, const char* option, const char* pattern) {
     size_t consumed = 0;
-    int parsed = sscanf(option, pattern, t->parsed.stringValue, &t->parsed.floatValue, &t->parsed.intValue, &consumed);
+    int parsed = sscanf(option, pattern, &t->parsed.floatValue, &t->parsed.intValue, &consumed);
     if (parsed > 0) {
         return true;
     }
-    if (consumed == strlen(option)) {
+    if (consumed == strlen(option)) { // "-flag"
         t->parsed.intValue = 1;
         return true;
     }
-    if (consumed > 0 && consumed < strlen(option)) {
+    if (consumed > 0 && consumed == 1 + strlen(t->name) + 1) { // '-' + <name> + '='
         strncpy(t->parsed.stringValue, option + consumed, sizeof(t->parsed.stringValue));
         return true;
     }
