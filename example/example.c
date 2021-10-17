@@ -6,12 +6,15 @@ int main(int argc, const char** argv) {
         INTOPT("blurgAmount", "9"),
         FLOATOPT("fudgeRatio", "-2.33"),
         STRINGOPT("trunkPrefix", "-=-"),
-        BOOLOPT("help")
-    );
+        BOOLOPT("help"));
 
     if (!parseArgs(&argc, &argv, opts)) {
         printf("Invalid option \"%s\".\n\n", argv[argc]);
-        printf("Usage: %s [options] [args]\n\nOptions:\n\n%s\n", argv[0], listOptions(opts));
+        printf(
+            "Usage: %s [options] [args]\n\n"
+            "Options:\n\n%s\n",
+            argv[0],
+            listOptions(opts));
         return 42;
     }
 
@@ -19,12 +22,15 @@ int main(int argc, const char** argv) {
     for (int i = 0; i < argc; i++) {
         printf("\t%s\n", argv[i]);
     }
-    printf("]\n\n");
+    printf("]\n");
 
-    printf("With a blurgAmount of %d, a fudgeRatio of %f, using trunkPrefix: %s, %shelp requested\n",
+    printf(
+        "with a blurgAmount of %d, "
+        "a fudgeRatio of %f, "
+        "using trunkPrefix: %s, "
+        "%shelp requested.\n",
         getIntOption(opts, "blurgAmount"),
         getFloatOption(opts, "fudgeRatio"),
         getStringOption(opts, "trunkPrefix"),
-        getBoolOption(opts, "help") ? "" : "no "
-    );
+        getBoolOption(opts, "help") ? "" : "no ");
 }

@@ -49,24 +49,23 @@ typedef struct OptionTemplate OptionTemplate;
 
 // Defines a list of option definitions, each argument
 // after [name] is a call to one of the <TYPE>OPT macros.
-#define OPTDEFS(name, ...) \
-    OptionTemplate name[] = {__VA_ARGS__, ENDOPT}
+#define OPTDEFS(name, ...) OptionTemplate name[] = { __VA_ARGS__, ENDOPT }
 
 // Defines a boolean option with default value FALSE.
 #define BOOLOPT(name) \
-    {name, "-" name OPTDELIM, INTFMT, "0"}
+    { name, "-" name OPTDELIM, INTFMT, "0" }
 
 // Defines a string option with default value.
 #define STRINGOPT(name, fallback) \
-    {name, STRINGFMT(name), STRINGFMT(name), "-" name "=" fallback}
+    { name, STRINGFMT(name), STRINGFMT(name), "-" name "=" fallback }
 
 // Defines a float option with default string value.
 #define FLOATOPT(name, fallback) \
-    {name, "-" name "=" FLOATFMT, FLOATFMT, fallback}
+    { name, "-" name "=" FLOATFMT, FLOATFMT, fallback }
 
 // Defines an integer option with default string value.
 #define INTOPT(name, fallback) \
-    {name, "-" name "=" INTFMT, INTFMT, fallback}
+    { name, "-" name "=" INTFMT, INTFMT, fallback }
 
 // Parses the argument vector defined by the argc, argv pair referenced
 // by [argcRef] and [argvRef] using the list of options templates.
@@ -74,34 +73,28 @@ typedef struct OptionTemplate OptionTemplate;
 // After successful invocation, argc and argv are updated to reference
 // the remaining arguments. On failure, argc is updated to point to
 // the argument that failed to parse (argv[argc] == invalid arg).
-bool
-parseArgs(int* argcRef, const char*** argvRef, OptionTemplate* templates);
+bool parseArgs(int* argcRef, const char*** argvRef, OptionTemplate* templates);
 
 // Returns the value of the named integer option.
 // If the option is not known, zero is returned.
-int
-getIntOption(OptionTemplate* templates, const char* name);
+int getIntOption(OptionTemplate* templates, const char* name);
 
 // Returns the value of the named float option.
 // If the option is not known, NaN is returned.
-float
-getFloatOption(OptionTemplate* templates, const char* name);
+float getFloatOption(OptionTemplate* templates, const char* name);
 
 // Returns the value of the named string option.
 // If the option is not known, NULL is returned.
-const char*
-getStringOption(OptionTemplate* templates, const char* name);
+const char* getStringOption(OptionTemplate* templates, const char* name);
 
 // Returns the value of the named bool option.
 // If the option is not known, FALSE is returned.
-bool
-getBoolOption(OptionTemplate* templates, const char* name);
+bool getBoolOption(OptionTemplate* templates, const char* name);
 
 // Returns a textual description of the provided options.
 // The returned text is allocated with malloc and should be
 // freed by the caller.
-const char*
-listOptions(OptionTemplate* templates);
+const char* listOptions(OptionTemplate* templates);
 
 // Max length of string option values.
 // Longer strings will be truncated.
@@ -131,6 +124,7 @@ struct OptionTemplate {
 #define INTFMT "%2$d" OPTDELIM
 #define FLOATFMT "%1$f" OPTDELIM
 #define STRINGFMT(s) "-" s "=" OPTDELIM
-#define ENDOPT {0}
+#define ENDOPT \
+    { 0 }
 
-#endif // ARGS_H
+#endif  // ARGS_H

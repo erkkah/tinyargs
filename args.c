@@ -11,11 +11,11 @@ static bool parseOptionTemplate(OptionTemplate* t, const char* option, const cha
     if (parsed > 0) {
         return true;
     }
-    if (consumed == strlen(option)) { // "-flag"
+    if (consumed == strlen(option)) {  // "-flag"
         t->parsed.intValue = 1;
         return true;
     }
-    if (consumed > 0 && consumed == 1 + strlen(t->name) + 1) { // '-' + <name> + '='
+    if (consumed > 0 && consumed == 1 + strlen(t->name) + 1) {  // '-' + <name> + '='
         strncpy(t->parsed.stringValue, option + consumed, sizeof(t->parsed.stringValue));
         return true;
     }
@@ -104,10 +104,11 @@ bool getBoolOption(OptionTemplate* templates, const char* name) {
 
 extern char* strdup(const char*);
 
-#define ASPRINTF(result, fmt, ...) { \
-    size_t len = snprintf(NULL, 0, fmt, __VA_ARGS__); \
-    *(result) = (char*) malloc(len); \
-    snprintf(*(result), len, fmt, __VA_ARGS__); \
+#define ASPRINTF(result, fmt, ...)                        \
+    {                                                     \
+        size_t len = snprintf(NULL, 0, fmt, __VA_ARGS__); \
+        *(result) = (char*)malloc(len + 1);               \
+        snprintf(*(result), len + 1, fmt, __VA_ARGS__);   \
     }
 
 const char* listOptions(OptionTemplate* tmpl) {
