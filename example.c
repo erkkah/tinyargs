@@ -2,21 +2,15 @@
 #include <stdio.h>
 
 int main(int argc, const char** argv) {
-    OptionTemplate options[] = {
-        INTOPT("blurgAmount"),
-        FLOATOPT("fudgeRatio"),
-        STRINGOPT("prefix"),
-        BOOLOPT("help"),
-        ENDOPT
-    };
+    static OPTIONLIST(options,
+        INTOPT("blurgAmount", "9"),
+        FLOATOPT("fudgeRatio", "-2.33"),
+        STRINGOPT("trunkPrefix", "-=-"),
+        BOOLOPT("help", "0")
+    );
 
     if (!parseArgs(argc, argv, options)) {
         printf("Failed to parse cmdline arguments\n");
-        return 42;
-    }
-
-    if (getArgCount() == 0) {
-        printf("Expected some kind of argument. Try again\n");
         return 42;
     }
 
@@ -27,11 +21,10 @@ int main(int argc, const char** argv) {
     }
     printf("]\n\n");
 
-    printf("With a blurgAmount of %d, a fudgeRatio of %f, using prefix: %s, %shelp requested\n",
-        getIntOption("blurgAmount", 9),
-        getFloatOption("fudgeRatio", -2.33),
-        getStringOption("prefix", "--->"),
-        getBoolOption("help", 0) ? "" : "no "
+    printf("With a blurgAmount of %d, a fudgeRatio of %f, using trunkPrefix: %s, %shelp requested\n",
+        getIntOption("blurgAmount"),
+        getFloatOption("fudgeRatio"),
+        getStringOption("trunkPrefix"),
+        getBoolOption("help") ? "" : "no "
     );
-
 }

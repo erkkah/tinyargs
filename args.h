@@ -29,44 +29,58 @@ const char** args = getArgs();
 ```
 
 ```
-$ myprog -debugPort 4711
+$ myprog -debugPort=4711
 ```
 
 */
 
+#ifndef STRINGOPTMAX
+#define STRINGOPTMAX 128
+#endif
+
+typedef struct {
+    char stringValue[STRINGOPTMAX];
+    int intValue;
+    float floatValue;
+} ParsedOption;
+
 typedef struct {
     const char* name;
     const char* pattern;
+    const char* fallbackPattern;
+    const char* fallback;
 
-    struct {
-        int ok;
-        const char* stringValue;
-        int intValue;
-        float floatValue;
-    } parsed;
+    ParsedOption parsed;
 } OptionTemplate;
 
+#define OPTIONLIST(name, ...) OptionTemplate name[] = {__VA_ARGS__, ENDOPT}
+
 #define OPTDELIM "%4$n"
-#define BOOLOPT(b) {b, "-" b OPTDELIM}
-#define STRINGOPT(s) {s, "-" s "=%1$ms" OPTDELIM}
-#define FLOATOPT(f) {f, "-" f "=%2$f" OPTDELIM}
-#define INTOPT(i) {i, "-" i "=%3$d" OPTDELIM}
+
+#define INTFMT "%3$d" OPTDELIM
+#define FLOATFMT "%2$f" OPTDELIM
+#define STRINGFMT(s) "-" s "=" OPTDELIM
+
+#define BOOLOPT(b, fallback) {b, "-" b OPTDELIM, INTFMT, fallback}
+#define STRINGOPT(s, fallback) {s, STRINGFMT(s), STRINGFMT(s), "-" s "=" fallback}
+#define FLOATOPT(f, fallback) {f, "-" f "=" FLOATFMT, FLOATFMT, fallback}
+#define INTOPT(i, fallback) {i, "-" i "=" INTFMT, INTFMT, fallback}
 #define ENDOPT {0}
 
 int
 parseArgs(int argc, const char** argv, OptionTemplate* options);
 
 int
-getIntOption(const char* name, int fallback);
+getIntOption(const char* name);
 
 float
-getFloatOption(const char* name, float fallback);
+getFloatOption(const char* name);
 
 const char*
-getStringOption(const char* name, const char* fallback);
+getStringOption(const char* name);
 
 int
-getBoolOption(const char* name, int fallback);
+getBoolOption(const char* name);
 
 int
 getArgCount();
