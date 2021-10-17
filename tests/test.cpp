@@ -63,6 +63,19 @@ TestMap tests = {  //
             assert(getFloatOption(options, "ratio") == -78.5);
             assert(noOptions.argc == 4);
         } },
+    { "Float option, scientific",
+        []() {
+            Commandline cmdline{ "-ratio=1.25e-1" };
+            OPTDEFS(options, FLOATOPT("ratio", "3.125e-2"));
+            assert(parseArgs(&cmdline.argc, &cmdline.argv, options));
+            assert(getFloatOption(options, "ratio") == 0.125);
+            assert(cmdline.argc == 0);
+
+            Commandline noOptions{ "one", "and", "a", "half" };
+            assert(parseArgs(&noOptions.argc, &noOptions.argv, options));
+            assert(getFloatOption(options, "ratio") == 0.03125);
+            assert(noOptions.argc == 4);
+        } },
     { "String option",
         []() {
             Commandline cmdline{ "-name=Zerblatt" };
