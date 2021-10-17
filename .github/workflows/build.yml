@@ -13,11 +13,11 @@ jobs:
     matrix:
       os: [macos-latest, ubuntu-latest]
   steps:
-    - name: Check out code
-      uses: actions/checkout@v1
-    - name: Compile
-      shell: bash
-      run: ./ci/build.sh
-    - name: Run tests
-      shell: bash
-      run: ./build/runtests
+  - name: Check out code
+    uses: actions/checkout@v1
+  - name: Compile
+    shell: bash
+    run: ./ci/build.sh
+  - name: Run tests
+    shell: bash
+    run: ./build/runtests
