@@ -103,7 +103,12 @@ bool getBoolOption(OptionTemplate* templates, const char* name) {
 }
 
 extern char* strdup(const char*);
-extern int asprintf(char**, const char*, ...);
+
+#define ASPRINTF(result, fmt, ...) { \
+    size_t len = snprintf(NULL, 0, __VA_ARGS__); \
+    *(result) = (char*) malloc(len); \
+    snprintf(*(result), len, __VA_ARGS__); \
+    }
 
 const char* listOptions(OptionTemplate* tmpl) {
     initOptions(tmpl);
@@ -114,16 +119,16 @@ const char* listOptions(OptionTemplate* tmpl) {
         const char* previous = result;
         if (!strstr(t->pattern, "=")) {
             // bool
-            asprintf(&result, "%s-%s\n", previous, t->name);
+            ASPRINTF(&result, "%s-%s\n", previous, t->name);
         } else if (strstr(t->pattern, INTFMT)) {
             // int
-            asprintf(&result, "%s-%s=<int>\t(default=%d)\n", previous, t->name, t->parsed.intValue);
+            ASPRINTF(&result, "%s-%s=<int>\t(default=%d)\n", previous, t->name, t->parsed.intValue);
         } else if (strstr(t->pattern, FLOATFMT)) {
             // float
-            asprintf(&result, "%s-%s=<float>\t(default=%f)\n", previous, t->name, t->parsed.floatValue);
+            ASPRINTF(&result, "%s-%s=<float>\t(default=%f)\n", previous, t->name, t->parsed.floatValue);
         } else {
             // string
-            asprintf(&result, "%s-%s=<string>\t(default=\"%s\")\n", previous, t->name, t->parsed.stringValue);
+            ASPRINTF(&result, "%s-%s=<string>\t(default=\"%s\")\n", previous, t->name, t->parsed.stringValue);
         }
         free((void*)previous);
     }
