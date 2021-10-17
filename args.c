@@ -126,7 +126,7 @@ const char* listOptions(OptionTemplate* tmpl) {
             ASPRINTF(&result, "%s-%s=<int>\t(default=%d)\n", previous, t->name, t->parsed.intValue);
         } else if (strstr(t->pattern, FLOATFMT)) {
             // float
-            ASPRINTF(&result, "%s-%s=<float>\t(default=%f)\n", previous, t->name, t->parsed.floatValue);
+            ASPRINTF(&result, "%s-%s=<float>\t(default=%G)\n", previous, t->name, t->parsed.floatValue);
         } else {
             // string
             ASPRINTF(&result, "%s-%s=<string>\t(default=\"%s\")\n", previous, t->name, t->parsed.stringValue);

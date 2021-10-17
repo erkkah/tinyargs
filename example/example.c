@@ -26,7 +26,7 @@ int main(int argc, const char** argv) {
 
     printf(
         "with a blurgAmount of %d, "
-        "a fudgeRatio of %f, "
+        "a fudgeRatio of %G, "
         "using trunkPrefix: %s, "
         "%shelp requested.\n",
         getIntOption(opts, "blurgAmount"),
