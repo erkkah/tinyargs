@@ -58,6 +58,7 @@ bool parseArgs(int* argcRef, const char*** argvRef, OptionTemplate* tmpl) {
         }
         int ok = parseOption(tmpl, arg);
         if (!ok) {
+            *argcRef = i;
             return false;
         }
     }

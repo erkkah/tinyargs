@@ -81,11 +81,11 @@ TestMap tests = { { "Bool option",
 
                         Commandline missing1{ "-myOption=3.125" };
                         assert(!parseArgs(&missing1.argc, &missing1.argv, options));
-                        assert(missing1.argc == 0);
+                        assert(missing1.argc == 1);
 
                         Commandline missing2{ "-myOption" };
                         assert(!parseArgs(&missing2.argc, &missing2.argv, options));
-                        assert(missing2.argc == 0);
+                        assert(missing2.argc == 1);
                     } },
                   { "Option list",
                     []() {
@@ -98,10 +98,17 @@ TestMap tests = { { "Bool option",
                             assert(usageString.find(word) != usageString.npos);
                         }
                     } },
-                  { "Bools with values are invalid", []() {
-                       OPTDEFS(options, BOOLOPT("flag"));
-                       Commandline cmdline{ "-flag=false" };
-                       assert(!parseArgs(&cmdline.argc, &cmdline.argv, options));
+                  { "Bools with values are invalid",
+                    []() {
+                        OPTDEFS(options, BOOLOPT("flag"));
+                        Commandline cmdline{ "-flag=false" };
+                        assert(!parseArgs(&cmdline.argc, &cmdline.argv, options));
+                    } },
+                  { "Invalid options are returned in argc", []() {
+                        OPTDEFS(options, BOOLOPT("flag"));
+                        Commandline cmdline{ "-flag", "-invalid=77" };
+                        assert(!parseArgs(&cmdline.argc, &cmdline.argv, options));
+                        assert(strcmp(cmdline.argv[cmdline.argc], "-invalid=77") == 0);
                    } } };
 
 int main() {

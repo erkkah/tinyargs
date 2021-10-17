@@ -72,7 +72,8 @@ typedef struct OptionTemplate OptionTemplate;
 // by [argcRef] and [argvRef] using the list of options templates.
 //
 // After successful invocation, argc and argv are updated to reference
-// the remaining arguments.
+// the remaining arguments. On failure, argc is updated to point to
+// the argument that failed to parse (argv[argc] == invalid arg).
 bool
 parseArgs(int* argcRef, const char*** argvRef, OptionTemplate* templates);
 

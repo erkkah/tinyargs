@@ -10,6 +10,7 @@ int main(int argc, const char** argv) {
     );
 
     if (!parseArgs(&argc, &argv, opts)) {
+        printf("Invalid option \"%s\".\n\n", argv[argc]);
         printf("Usage: %s [options] [args]\n\nOptions:\n\n%s\n", argv[0], listOptions(opts));
         return 42;
     }
