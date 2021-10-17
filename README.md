@@ -63,7 +63,7 @@ with a blurgAmount of 9, a fudgeRatio of 3.140000, using trunkPrefix: -=-, help 
 $ ./example -notAnOption=66
 Invalid option "-notAnOption=66".
 
-Usage: ./build/cexample [options] [args]
+Usage: ./example [options] [args]
 
 Options:
 
