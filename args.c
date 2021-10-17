@@ -105,9 +105,9 @@ bool getBoolOption(OptionTemplate* templates, const char* name) {
 extern char* strdup(const char*);
 
 #define ASPRINTF(result, fmt, ...) { \
-    size_t len = snprintf(NULL, 0, __VA_ARGS__); \
+    size_t len = snprintf(NULL, 0, fmt, __VA_ARGS__); \
     *(result) = (char*) malloc(len); \
-    snprintf(*(result), len, __VA_ARGS__); \
+    snprintf(*(result), len, fmt, __VA_ARGS__); \
     }
 
 const char* listOptions(OptionTemplate* tmpl) {
