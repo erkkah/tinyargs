@@ -45,31 +45,12 @@ $ myprog -debugPort=4711 argument
 
 #include <stdbool.h>
 
-#ifndef STRINGOPTMAX
-#define STRINGOPTMAX 128
-#endif
+typedef struct OptionTemplate OptionTemplate;
 
-typedef struct {
-    char stringValue[STRINGOPTMAX];
-    int intValue;
-    float floatValue;
-} ParsedOption;
-
-typedef struct {
-    const char* name;
-    const char* pattern;
-    const char* fallbackPattern;
-    const char* fallback;
-
-    ParsedOption parsed;
-} OptionTemplate;
-
-#define OPTDEFS(name, ...) OptionTemplate name[] = {__VA_ARGS__, ENDOPT}
-
-#define OPTDELIM "%4$n"
-#define INTFMT "%3$d" OPTDELIM
-#define FLOATFMT "%2$f" OPTDELIM
-#define STRINGFMT(s) "-" s "=" OPTDELIM
+// Defines a list of option definitions, each argument
+// after [name] is a call to one of the <TYPE>OPT macros.
+#define OPTDEFS(name, ...) \
+    OptionTemplate name[] = {__VA_ARGS__, ENDOPT}
 
 // Defines a boolean option with default value FALSE.
 #define BOOLOPT(name) \
@@ -86,8 +67,6 @@ typedef struct {
 // Defines an integer option with default string value.
 #define INTOPT(name, fallback) \
     {name, "-" name "=" INTFMT, INTFMT, fallback}
-
-#define ENDOPT {0}
 
 // Parses the argument vector defined by the argc, argv pair referenced
 // by [argcRef] and [argvRef] using the list of options templates.
@@ -122,5 +101,35 @@ getBoolOption(OptionTemplate* templates, const char* name);
 // freed by the caller.
 const char*
 listOptions(OptionTemplate* templates);
+
+// Max length of string option values.
+// Longer strings will be truncated.
+// Redefine if needed.
+#ifndef STRINGOPTMAX
+#define STRINGOPTMAX 64
+#endif
+
+// --- Internals ---
+
+typedef struct {
+    char stringValue[STRINGOPTMAX];
+    int intValue;
+    float floatValue;
+} ParsedOption;
+
+struct OptionTemplate {
+    const char* name;
+    const char* pattern;
+    const char* fallbackPattern;
+    const char* fallback;
+
+    ParsedOption parsed;
+};
+
+#define OPTDELIM "%4$n"
+#define INTFMT "%3$d" OPTDELIM
+#define FLOATFMT "%2$f" OPTDELIM
+#define STRINGFMT(s) "-" s "=" OPTDELIM
+#define ENDOPT {0}
 
 #endif // ARGS_H
