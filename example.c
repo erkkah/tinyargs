@@ -2,15 +2,15 @@
 #include <stdio.h>
 
 int main(int argc, const char** argv) {
-    static OPTIONLIST(options,
+    static OPTDEFS(options,
         INTOPT("blurgAmount", "9"),
         FLOATOPT("fudgeRatio", "-2.33"),
         STRINGOPT("trunkPrefix", "-=-"),
-        BOOLOPT("help", "0")
+        BOOLOPT("help")
     );
 
     if (!parseArgs(argc, argv, options)) {
-        printf("Failed to parse cmdline arguments\n");
+        printf("Usage: %s [options] [args]\n\nOptions:\n%s\n", argv[0], listOptions());
         return 42;
     }
 

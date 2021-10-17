@@ -3,29 +3,27 @@
 
 /*
 
-Tiny commandline argument parser for C / C++
+Tiny commandline argument parser for C99 / C++ 11
 
 Example use:
 
 ```
-OptionTemplate options[] = {
-    INTOPT("debugPort"),
-    BOOLOPT("help"),
-    ENDOPT
-};
+OPTDEFS(options,
+    INTOPT("debugPort", 7676),
+    BOOLOPT("help")
+);
 
 if (!parseArgs(argc, argv, options)) {
-    printf("Failed to parse args");
+    printf("Failed to parse arguments\nValid options:\n%s", listOptions());
     exit(1);
 }
 
 // Option flags
-int helpMode = getBoolOption("help", 0);
-int debugPort = getIntOption("debugPort", 7676);
+int helpMode = getBoolOption("help");
+int debugPort = getIntOption("debugPort");
 
 // Arguments
 const char** args = getArgs();
-
 ```
 
 ```
@@ -53,18 +51,29 @@ typedef struct {
     ParsedOption parsed;
 } OptionTemplate;
 
-#define OPTIONLIST(name, ...) OptionTemplate name[] = {__VA_ARGS__, ENDOPT}
+#define OPTDEFS(name, ...) OptionTemplate name[] = {__VA_ARGS__, ENDOPT}
 
 #define OPTDELIM "%4$n"
-
 #define INTFMT "%3$d" OPTDELIM
 #define FLOATFMT "%2$f" OPTDELIM
 #define STRINGFMT(s) "-" s "=" OPTDELIM
 
-#define BOOLOPT(b, fallback) {b, "-" b OPTDELIM, INTFMT, fallback}
-#define STRINGOPT(s, fallback) {s, STRINGFMT(s), STRINGFMT(s), "-" s "=" fallback}
-#define FLOATOPT(f, fallback) {f, "-" f "=" FLOATFMT, FLOATFMT, fallback}
-#define INTOPT(i, fallback) {i, "-" i "=" INTFMT, INTFMT, fallback}
+// Defines a boolean option with default value FALSE.
+#define BOOLOPT(name) \
+    {name, "-" name OPTDELIM, INTFMT, "0"}
+
+// Defines a string option with fallback value.
+#define STRINGOPT(name, fallback) \
+    {name, STRINGFMT(name), STRINGFMT(name), "-" name "=" fallback}
+
+// Defines a float option with fallback string value.
+#define FLOATOPT(name, fallback) \
+    {name, "-" name "=" FLOATFMT, FLOATFMT, fallback}
+
+// Defines an integer option with fallback string value.
+#define INTOPT(name, fallback) \
+    {name, "-" name "=" INTFMT, INTFMT, fallback}
+
 #define ENDOPT {0}
 
 int
@@ -87,5 +96,8 @@ getArgCount();
 
 const char**
 getArgs();
+
+const char*
+listOptions();
 
 #endif // ARGS_H

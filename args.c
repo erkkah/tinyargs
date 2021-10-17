@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
@@ -108,4 +109,30 @@ int getArgCount() {
 
 const char** getArgs() {
     return arguments;
+}
+
+const char* listOptions() {
+    initOptions();
+
+    char* result = strdup("");
+
+    for (OptionTemplate* t = templates; t->name != 0; t++) {
+        const char* previous = result;
+        if (!strstr(t->pattern, "=")) {
+            // bool
+            asprintf(&result, "%s-%s\n", previous, t->name);
+        } else if (strstr(t->pattern, INTFMT)) {
+            // int
+            asprintf(&result, "%s-%s=<int>\t(default=%d)\n", previous, t->name, t->parsed.intValue);
+        } else if (strstr(t->pattern, FLOATFMT)) {
+            // float
+            asprintf(&result, "%s-%s=<float>\t(default=%f)\n", previous, t->name, t->parsed.floatValue);
+        } else {
+            // string
+            asprintf(&result, "%s-%s=<string>\t(default=\"%s\")\n", previous, t->name, t->parsed.stringValue);
+        }
+        free((void*)previous);
+    }
+
+    return result;
 }
