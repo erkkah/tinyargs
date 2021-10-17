@@ -5,118 +5,108 @@
 
 #include "args.h"
 
-static OptionTemplate* templates = 0;
-static int argumentCount = 0;
-static const char** arguments = 0;
-
-static int parseOptionTemplate(OptionTemplate* t, const char* option, const char* pattern) {
+static bool parseOptionTemplate(OptionTemplate* t, const char* option, const char* pattern) {
     size_t consumed = 0;
     int parsed = sscanf(option, pattern, t->parsed.stringValue, &t->parsed.floatValue, &t->parsed.intValue, &consumed);
     if (parsed > 0) {
-        return 1;
+        return true;
     }
     if (consumed == strlen(option)) {
         t->parsed.intValue = 1;
-        return 1;
+        return true;
     }
     if (consumed > 0 && consumed < strlen(option)) {
         strncpy(t->parsed.stringValue, option + consumed, sizeof(t->parsed.stringValue));
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
-static int initOptions() {
-    for (OptionTemplate* t = templates; t->name != 0; t++) {
+static bool initOptions(OptionTemplate* t) {
+    for (; t->name != 0; t++) {
         if (!parseOptionTemplate(t, t->fallback, t->fallbackPattern)) {
-            return 0;
+            return false;
         }
     }
-    return 1;
+    return true;
 }
 
-static int parseOption(const char* arg) {
-    for (OptionTemplate* t = templates; t->name != 0; t++) {
+static bool parseOption(OptionTemplate* t, const char* arg) {
+    for (; t->name != 0; t++) {
         if (parseOptionTemplate(t, arg, t->pattern)) {
-            return 1;
+            return true;
         }
     }
-    return 0;
+    return false;
 }
 
-int parseArgs(int argc, const char** argv, OptionTemplate* tmpl) {
-    templates = tmpl;
+bool parseArgs(int* argcRef, const char*** argvRef, OptionTemplate* tmpl) {
+    int argc = *argcRef;
+    *argcRef = 0;
+    const char** argv = *argvRef;
 
-    if (!initOptions()) {
-        return 0;
+    if (!initOptions(tmpl)) {
+        return false;
     }
 
     for (int i = 1; i < argc; i++) {
         const char* arg = argv[i];
         if (arg[0] != '-') {
-            arguments = argv + i;
-            argumentCount = argc - i;
+            *argvRef = argv + i;
+            *argcRef = argc - i;
             break;
         }
-        int ok = parseOption(arg);
+        int ok = parseOption(tmpl, arg);
         if (!ok) {
-            return 0;
+            return false;
         }
     }
-    return 1;
+    return true;
 }
 
-static const OptionTemplate* findOption(const char* name) {
-    for (OptionTemplate* t = templates; t->name != 0; t++) {
+static const OptionTemplate* findOption(OptionTemplate* t, const char* name) {
+    for (; t->name != 0; t++) {
         if (strcmp(name, t->name) == 0) {
             return t;
         }
     }
-    return 0;
+    return NULL;
 }
 
-int getIntOption(const char* name) {
-    const OptionTemplate* t = findOption(name);
+int getIntOption(OptionTemplate* templates, const char* name) {
+    const OptionTemplate* t = findOption(templates, name);
     if (t) {
         return t->parsed.intValue;
     }
     return 0;
 }
 
-float getFloatOption(const char* name) {
-    const OptionTemplate* t = findOption(name);
+float getFloatOption(OptionTemplate* templates, const char* name) {
+    const OptionTemplate* t = findOption(templates, name);
     if (t) {
         return t->parsed.floatValue;
     }
     return NAN;
 }
 
-const char* getStringOption(const char* name) {
-    const OptionTemplate* t = findOption(name);
+const char* getStringOption(OptionTemplate* templates, const char* name) {
+    const OptionTemplate* t = findOption(templates, name);
     if (t) {
         return t->parsed.stringValue;
     }
-    return 0;
+    return NULL;
 }
 
-int getBoolOption(const char* name) {
-    return getIntOption(name);
+bool getBoolOption(OptionTemplate* templates, const char* name) {
+    return getIntOption(templates, name);
 }
 
-int getArgCount() {
-    return argumentCount;
-}
-
-const char** getArgs() {
-    return arguments;
-}
-
-const char* listOptions() {
-    initOptions();
+const char* listOptions(OptionTemplate* tmpl) {
+    initOptions(tmpl);
 
     char* result = strdup("");
 
-    for (OptionTemplate* t = templates; t->name != 0; t++) {
+    for (OptionTemplate* t = tmpl; t->name != 0; t++) {
         const char* previous = result;
         if (!strstr(t->pattern, "=")) {
             // bool

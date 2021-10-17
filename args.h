@@ -3,34 +3,47 @@
 
 /*
 
-Tiny commandline argument parser for C99 / C++ 11
+Tiny commandline argument parser for C99 / C++ 11.
+
+Handles "options first, arguments later" invocation style:
+
+```
+prog -option -otherOption=21 argument1 argument2
+```
+
+The first argument found stops the search for options.
 
 Example use:
 
 ```
+// Define options
 OPTDEFS(options,
+    // Default value is 7676
     INTOPT("debugPort", 7676),
     BOOLOPT("help")
 );
 
-if (!parseArgs(argc, argv, options)) {
-    printf("Failed to parse arguments\nValid options:\n%s", listOptions());
+// Parse commandline
+if (!parseArgs(&argc, &argv, options)) {
+    printf("Failed to parse arguments\nValid options:\n%s", listOptions(options));
     exit(1);
 }
 
+// There are now argc arguments left at argv.
+
 // Option flags
-int helpMode = getBoolOption("help");
-int debugPort = getIntOption("debugPort");
+int helpMode = getBoolOption(options, "help");
+int debugPort = getIntOption(options, "debugPort");
 
-// Arguments
-const char** args = getArgs();
 ```
 
 ```
-$ myprog -debugPort=4711
+$ myprog -debugPort=4711 argument
 ```
 
 */
+
+#include <stdbool.h>
 
 #ifndef STRINGOPTMAX
 #define STRINGOPTMAX 128
@@ -62,42 +75,52 @@ typedef struct {
 #define BOOLOPT(name) \
     {name, "-" name OPTDELIM, INTFMT, "0"}
 
-// Defines a string option with fallback value.
+// Defines a string option with default value.
 #define STRINGOPT(name, fallback) \
     {name, STRINGFMT(name), STRINGFMT(name), "-" name "=" fallback}
 
-// Defines a float option with fallback string value.
+// Defines a float option with default string value.
 #define FLOATOPT(name, fallback) \
     {name, "-" name "=" FLOATFMT, FLOATFMT, fallback}
 
-// Defines an integer option with fallback string value.
+// Defines an integer option with default string value.
 #define INTOPT(name, fallback) \
     {name, "-" name "=" INTFMT, INTFMT, fallback}
 
 #define ENDOPT {0}
 
-int
-parseArgs(int argc, const char** argv, OptionTemplate* options);
+// Parses the argument vector defined by the argc, argv pair referenced
+// by [argcRef] and [argvRef] using the list of options templates.
+//
+// After successful invocation, argc and argv are updated to reference
+// the remaining arguments.
+bool
+parseArgs(int* argcRef, const char*** argvRef, OptionTemplate* templates);
 
+// Returns the value of the named integer option.
+// If the option is not known, zero is returned.
 int
-getIntOption(const char* name);
+getIntOption(OptionTemplate* templates, const char* name);
 
+// Returns the value of the named float option.
+// If the option is not known, NaN is returned.
 float
-getFloatOption(const char* name);
+getFloatOption(OptionTemplate* templates, const char* name);
 
+// Returns the value of the named string option.
+// If the option is not known, NULL is returned.
 const char*
-getStringOption(const char* name);
+getStringOption(OptionTemplate* templates, const char* name);
 
-int
-getBoolOption(const char* name);
+// Returns the value of the named bool option.
+// If the option is not known, FALSE is returned.
+bool
+getBoolOption(OptionTemplate* templates, const char* name);
 
-int
-getArgCount();
-
-const char**
-getArgs();
-
+// Returns a textual description of the provided options.
+// The returned text is allocated with malloc and should be
+// freed by the caller.
 const char*
-listOptions();
+listOptions(OptionTemplate* templates);
 
 #endif // ARGS_H
