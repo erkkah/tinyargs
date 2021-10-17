@@ -3,6 +3,7 @@
 #include <string>
 #include <functional>
 #include <iostream>
+#include <cstring>
 #include <assert.h>
 
 #include "../args.h"

@@ -101,6 +101,9 @@ bool getBoolOption(OptionTemplate* templates, const char* name) {
     return getIntOption(templates, name);
 }
 
+extern char* strdup(const char*);
+extern int asprintf(char**, const char*, ...);
+
 const char* listOptions(OptionTemplate* tmpl) {
     initOptions(tmpl);
 
